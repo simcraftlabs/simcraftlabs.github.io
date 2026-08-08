@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Навчальні симуляції — Каталог</title>
+
+<!-- Google Fonts: три ролі шрифту —
+     Newsreader (серіф) — заголовки й назви розділів, дає "друкований" характер;
+     IBM Plex Mono — номери, лейбли, дрібні технічні підписи (код/каталожний стиль);
+     Inter — основний текст (описи), нейтральний і читабельний -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== ТОКЕНИ ДИЗАЙНУ =====
+     Всі кольори зібрані тут, щоб їх можна було міняти в одному місці
+     і легко переносити на інші сторінки сайту (geography.html і т.д.) для консистентності. */
+  :root{
+    --paper:#faf9f6;   /* фон сторінки — теплий "паперовий", не чисто білий */
+    --ink:#17181c;     /* основний колір тексту — майже чорний, але не #000 */
+    --ink-soft:#5b5d63;/* приглушений сірий — для підписів, описів, другорядного тексту */
+    --line:#dcdad3;    /* колір тонких ліній-розділювачів і сітки */
+
+    /* акцентні кольори по предметах — приглушені, "чорнильні" відтінки,
+       а не яскраво-плакатні, щоб не виглядало по-дитячому */
+    --phys:#2451a3;  /* фізика — синій */
+    --geo:#9a5b13;   /* географія — вохра/коричневий */
+    --info:#146b4d;  /* інформатика — зелений */
+    --misc:#5a3e9e;  /* логіка/різне — фіолетовий */
+  }
+
+  /* ===== СКИДАННЯ БАЗОВИХ СТИЛІВ ===== */
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{background:var(--paper);}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif; /* базовий шрифт тексту */
+    min-height:100vh;
+    position:relative; /* потрібно, щоб .grid-bg (position:fixed) коректно лежав під контентом */
+  }
+
+  /* ===== ФОНОВА МІЛІМЕТРІВКА =====
+     Замість анімованих "скляних" фігур — статична ледь помітна сітка,
+     натяк на лабораторний зошит/креслення. Без анімації, щоб не відволікати. */
+  .grid-bg{
+    position:fixed;
+    inset:0;              /* розтягнути на весь екран (top/right/bottom/left: 0) */
+    z-index:-1;            /* завжди позаду контенту */
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),   /* вертикальні лінії */
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);  /* горизонтальні лінії */
+    background-size:44px 44px; /* розмір клітинки сітки */
+    opacity:0.35;               /* робимо сітку ледь помітною */
+    /* маска: сітка яскравіша вгорі-по центру і плавно зникає до країв —
+       щоб не виглядало як суцільний "клітчастий" фон на весь екран */
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  /* ===== ОСНОВНИЙ КОНТЕЙНЕР ===== */
+  .wrap{
+    max-width:760px;         /* вузька колонка — легше читати, схоже на друкований аркуш */
+    margin:0 auto;           /* центрування по горизонталі */
+    padding:88px 24px 120px; /* багато простору зверху й знизу — "дихання" сторінки */
+  }
+
+  /* ===== ШАПКА ===== */
+
+  /* маленький підпис-"eyebrow" над заголовком, у стилі каталожного номера */
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;   /* розрідження літер — типово для дрібних технічних підписів */
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:"№ ";} /* префікс через ::before, а не прямо в тексті HTML */
+
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:clamp(2.2rem, 5vw, 3.1rem); /* адаптивний розмір: мін 2.2rem, макс 3.1rem, залежно від ширини екрана */
+    letter-spacing:-0.01em;  /* трохи стиснути літери — типово для великих серифних заголовків */
+    line-height:1.08;
+    margin-bottom:14px;
+  }
+
+  p.lede{
+    font-size:1.02rem;
+    color:var(--ink-soft);
+    max-width:46ch;    /* обмеження ширини в символах — щоб рядок не був занадто довгим */
+    margin-bottom:64px;
+  }
+
+  /* ===== СПИСОК-ІНДЕКС (замість карток) ===== */
+
+  .index{
+    border-top:1px solid var(--ink); /* жирна верхня межа — початок "таблиці" */
+  }
+
+  /* один рядок-розділ (посилання) */
+  .entry{
+    display:flex;
+    align-items:center;
+    gap:22px;                 /* відстань між номером/іконкою/текстом/кнопкою */
+    padding:26px 4px;
+    border-bottom:1px solid var(--line); /* тонка лінія знизу кожного рядка */
+    text-decoration:none;
+    color:inherit;
+    position:relative;
+    /* анімуються тільки padding-left і колір межі — легкий, не "іграшковий" ефект */
+    transition:padding-left 0.18s ease, border-color 0.18s ease;
+  }
+  /* при наведенні/фокусі рядок трохи "зсувається" вправо і межа темніє */
+  .entry:hover, .entry:focus-visible{
+    padding-left:14px;
+    border-bottom-color:var(--ink);
+  }
+  /* видима рамка фокуса для клавіатурної навігації (доступність) */
+  .entry:focus-visible{
+    outline:2px solid var(--ink);
+    outline-offset:-2px;
+  }
+
+  /* порядковий номер розділу (01, 02...) моноширинним шрифтом */
+  .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    width:26px;     /* фіксована ширина — щоб назви завжди починались з однієї лінії */
+    flex:0 0 auto;  /* не стискається і не розтягується */
+  }
+
+  /* контейнер для SVG-іконки предмета */
+  .icon{
+    width:38px;
+    height:38px;
+    flex:0 0 auto;
+  }
+  .icon svg{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  /* блок із назвою та описом — займає всю вільну ширину рядка */
+  .body{
+    flex:1 1 auto;
+    min-width:0; /* дозволяє тексту коректно переноситись/обрізатись у flex-контейнері */
+  }
+  .title{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:1.32rem;
+    margin-bottom:3px;
+  }
+  .desc{
+    font-size:0.92rem;
+    color:var(--ink-soft);
+  }
+
+  /* маленька "печатка"-код праворуч (Physics / Geography...) — каталожний штрих */
+  .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border:1px solid var(--line);
+    flex:0 0 auto;
+    white-space:nowrap; /* не переносити текст код-лейбла на другий рядок */
+  }
+
+  /* стрілка праворуч, яка "виїжджає" при наведенні */
+  .arrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:1.1rem;
+    color:var(--ink-soft);
+    flex:0 0 auto;
+    transform:translateX(0);
+    transition:transform 0.18s ease, color 0.18s ease;
+  }
+  .entry:hover .arrow, .entry:focus-visible .arrow{
+    transform:translateX(4px); /* зсув стрілки на 4px вправо */
+    color:var(--ink);
+  }
+
+  /* ===== КОЛЬОРОВІ АКЦЕНТИ ПО ПРЕДМЕТАХ =====
+     Кожен предмет має свій клас (.e-phys, .e-geo, .e-info, .e-misc),
+     який фарбує іконку (stroke) і код-лейбл (колір тексту + рамка) */
+  .e-phys .icon svg{stroke:var(--phys);}
+  .e-phys .code{color:var(--phys); border-color:var(--phys);}
+
+  .e-geo .icon svg{stroke:var(--geo);}
+  .e-geo .code{color:var(--geo); border-color:var(--geo);}
+
+  .e-info .icon svg{stroke:var(--info);}
+  .e-info .code{color:var(--info); border-color:var(--info);}
+
+  .e-misc .icon svg{stroke:var(--misc);}
+  .e-misc .code{color:var(--misc); border-color:var(--misc);}
+
+  /* ===== ПІДВАЛ =====
+     Дрібний текст унизу — тепер license note замість назви закладу */
+  footer{
+    margin-top:56px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+  }
+
+  /* ===== МОБІЛЬНА АДАПТАЦІЯ =====
+     На вузьких екранах прибираємо код-лейбл і опис, щоб рядок не ламався
+     і залишався читабельним в один погляд */
+  @media (max-width:560px){
+    .entry{gap:14px;}
+    .code{display:none;}
+    .desc{display:none;}
+  }
+
+  /* ===== ПОВАГА ДО НАЛАШТУВАНЬ ДОСТУПНОСТІ =====
+     Якщо в системі користувача увімкнено "зменшити анімацію" — вимикаємо всі transition */
+  @media (prefers-reduced-motion: reduce){
+    .entry, .arrow{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Фонова сітка. aria-hidden, бо це суто декоративний елемент,
+     не несе інформації для читачів з екранними дикторами -->
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <!-- ===== ШАПКА СТОРІНКИ ===== -->
+  <header>
+    <div class="eyebrow">Каталог застосунків</div>
+    <h1>Навчальні симуляції</h1>
+    <p class="lede">Інтерактивні матеріали з фізики, географії та інформатики — оберіть розділ.</p>
+  </header>
+
+  <!-- ===== СПИСОК РОЗДІЛІВ =====
+       nav замість div — семантично коректно для блоку навігації по сайту -->
+  <nav class="index" aria-label="Розділи">
+
+    <!-- --- Розділ 1: Фізика --- -->
+    <a href="physics.html" class="entry e-phys">
+      <span class="num">01</span>
+
+      <!-- Іконка: спрощена схема атома (три еліптичні орбіти + ядро) -->
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <ellipse cx="20" cy="20" rx="16" ry="6" transform="rotate(20 20 20)"/>
+          <ellipse cx="20" cy="20" rx="16" ry="6" transform="rotate(80 20 20)"/>
+          <ellipse cx="20" cy="20" rx="16" ry="6" transform="rotate(140 20 20)"/>
+          <circle cx="20" cy="20" r="2.4" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+
+      <span class="body">
+        <span class="title">Фізика</span>
+        <span class="desc">Механіка, електрика, оптика — інтерактивні моделі</span>
+      </span>
+
+      <span class="code">Physics</span>
+      <span class="arrow">→</span>
+    </a>
+
+    <!-- --- Розділ 2: Географія --- -->
+    <a href="geography.html" class="entry e-geo">
+      <span class="num">02</span>
+
+      <!-- Іконка: три хвилясті лінії — топографічні ізолінії рельєфу -->
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <path d="M2 14 Q12 6 20 13 T38 10"/>
+          <path d="M2 21 Q13 13 21 20 T38 17"/>
+          <path d="M2 28 Q14 20 22 27 T38 24"/>
+        </svg>
+      </span>
+
+      <span class="body">
+        <span class="title">Географія</span>
+        <span class="desc">Атласи, рельєф, кліматичні та економічні карти</span>
+      </span>
+
+      <span class="code">Geography</span>
+      <span class="arrow">→</span>
+    </a>
+
+    <!-- --- Розділ 3: Інформатика --- -->
+    <a href="informatics.html" class="entry e-info">
+      <span class="num">03</span>
+
+      <!-- Іконка: чотири вузли, з'єднані лініями — схема мережі/графа -->
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <line x1="8" y1="8" x2="32" y2="16"/>
+          <line x1="32" y1="16" x2="20" y2="32"/>
+          <line x1="20" y1="32" x2="8" y2="8"/>
+          <line x1="8" y1="8" x2="6" y2="24"/>
+          <line x1="6" y1="24" x2="20" y2="32"/>
+          <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none"/>
+          <circle cx="32" cy="16" r="2.4" fill="currentColor" stroke="none"/>
+          <circle cx="20" cy="32" r="2.2" fill="currentColor" stroke="none"/>
+          <circle cx="6" cy="24" r="1.8" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+
+      <span class="body">
+        <span class="title">Інформатика</span>
+        <span class="desc">Алгоритми, структури даних, основи програмування</span>
+      </span>
+
+      <span class="code">Informatics</span>
+      <span class="arrow">→</span>
+    </a>
+
+    <!-- --- Розділ 4: Логіка та різне --- -->
+    <a href="logic.html" class="entry e-misc">
+      <span class="num">04</span>
+
+      <!-- Іконка: три квадрати-пазли + одна дужка — натяк на "різне/головоломки" -->
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <rect x="7" y="7" width="12" height="12"/>
+          <rect x="21" y="7" width="12" height="12"/>
+          <rect x="7" y="21" width="12" height="12"/>
+          <path d="M21 27 h6 a6 6 0 0 0 6 -6 v-6"/>
+        </svg>
+      </span>
+
+      <span class="body">
+        <span class="title">Логіка та різне</span>
+        <span class="desc">Задачі на мислення, головоломки, змішані теми</span>
+      </span>
+
+      <span class="code">Misc</span>
+      <span class="arrow">→</span>
+    </a>
+
+  </nav>
+
+  <!-- ===== ПІДВАЛ =====
+       Особистий проєкт, тому замість шкільної атрибуції — коротка нотатка про ліцензію MIT:
+       код відкритий, будь-хто може вільно копіювати й змінювати за умови вказівки автора. -->
+  <footer><a href="LICENSE" style="color:inherit;">MIT License</a> · код відкритий для копіювання й змін</footer>
+
+</div>
+
+</body>
+</html>

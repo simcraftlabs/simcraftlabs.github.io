@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Географія — Каталог</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== ТІ САМІ ТОКЕНИ, ЩО Й НА ГОЛОВНІЙ СТОРІНЦІ ===== */
+  :root{
+    --paper:#faf9f6;
+    --ink:#17181c;
+    --ink-soft:#5b5d63;
+    --line:#dcdad3;
+    --geo:#9a5b13;   /* акцент розділу — той самий, що на головній для "Географії" */
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    min-height:100vh;
+    position:relative;
+  }
+
+  /* та сама фонова міліметрівка, статична, без анімації */
+  .grid-bg{
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size:44px 44px;
+    opacity:0.35;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  .wrap{max-width:760px; margin:0 auto; padding:56px 24px 120px;}
+
+  /* ===== ПОСИЛАННЯ "НАЗАД" ===== */
+  .back{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    text-decoration:none;
+    margin-bottom:40px;
+  }
+  .back:hover{color:var(--ink);}
+
+  /* ===== ШАПКА ===== */
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--geo);
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:"№ 02 — ";}
+
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:clamp(2rem, 5vw, 2.7rem);
+    letter-spacing:-0.01em;
+    line-height:1.08;
+    margin-bottom:14px;
+  }
+
+  p.lede{
+    font-size:1.02rem;
+    color:var(--ink-soft);
+    max-width:50ch;
+    margin-bottom:44px;
+  }
+
+  /* ===== ФІЛЬТРИ =====
+     Замість pill-кнопок — рядок текстових вкладок з нижнім підкресленням,
+     активний фільтр підкреслений акцентним кольором розділу */
+  .filters{
+    display:flex; flex-wrap:wrap; gap:22px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+    margin-bottom:6px;
+  }
+  .filter-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.02em;
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-soft);
+    padding:4px 0;
+    border-bottom:2px solid transparent;
+    transition:color 0.15s ease, border-color 0.15s ease;
+  }
+  .filter-btn:hover{color:var(--ink);}
+  .filter-btn.active{color:var(--ink); border-bottom-color:var(--geo);}
+
+  /* ===== СПИСОК-ІНДЕКС МАТЕРІАЛІВ ===== */
+  .index{border-top:1px solid var(--ink);}
+
+  .entry{
+    display:flex; gap:22px; align-items:flex-start;
+    padding:28px 4px;
+    border-bottom:1px solid var(--line);
+    transition:padding-left 0.18s ease, border-color 0.18s ease;
+  }
+  .entry:hover{padding-left:14px; border-bottom-color:var(--ink);}
+
+  .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    width:26px; flex:0 0 auto; padding-top:2px;
+  }
+
+  .icon{width:34px; height:34px; flex:0 0 auto; margin-top:1px;}
+  .icon svg{width:100%; height:100%; display:block; stroke:var(--geo);}
+
+  .body{flex:1 1 auto; min-width:0;}
+
+  .tags{display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;}
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:2px 7px;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+  }
+
+  .title{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:1.28rem;
+    margin-bottom:5px;
+  }
+  .desc{font-size:0.92rem; color:var(--ink-soft); max-width:52ch;}
+
+  /* ===== ДІЇ (Відкрити / Завантажити) =====
+     Текстові посилання замість заповнених кнопок — рядок, що не змагається
+     з назвою матеріалу за увагу */
+  .actions{
+    display:flex; flex-direction:column; gap:10px;
+    flex:0 0 auto; padding-top:2px; align-items:flex-end;
+  }
+  .act{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .act-open{
+    color:var(--geo);
+    border-bottom:1px solid var(--geo);
+    padding-bottom:1px;
+  }
+  .act-open:hover{opacity:0.7;}
+  .act-download{
+    color:var(--ink-soft);
+    border-bottom:1px solid transparent;
+  }
+  .act-download:hover{color:var(--ink); border-bottom-color:var(--ink);}
+
+  .empty{
+    display:none;
+    padding:40px 4px;
+    color:var(--ink-soft);
+    font-size:0.92rem;
+    border-bottom:1px solid var(--line);
+  }
+
+  @media (max-width:600px){
+    .entry{flex-direction:column;}
+    .actions{flex-direction:row; align-items:center; width:100%; padding-top:8px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .entry, .filter-btn{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <a href="index.html" class="back">← На головну</a>
+
+  <header>
+    <div class="eyebrow">Каталог застосунків</div>
+    <h1>Географія</h1>
+    <p class="lede">Інтерактивні карти, атласи та географічні симуляції.</p>
+  </header>
+
+  <div class="filters" role="tablist" aria-label="Фільтр за темою">
+    <button class="filter-btn active" data-filter="all">Усі матеріали</button>
+    <button class="filter-btn" data-filter="phys-geo">Фізична географія</button>
+    <button class="filter-btn" data-filter="econ-geo">Економічна географія</button>
+    <button class="filter-btn" data-filter="g8">8 клас</button>
+    <button class="filter-btn" data-filter="g9">9 клас</button>
+  </div>
+
+  <nav class="index" aria-label="Матеріали">
+
+    <a href="relief-ukraine-rivers.html" class="entry" data-tags="phys-geo g8" target="_blank">
+      <span class="num">01</span>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <path d="M2 14 Q12 6 20 13 T38 10"/>
+          <path d="M2 21 Q13 13 21 20 T38 17"/>
+          <path d="M2 28 Q14 20 22 27 T38 24"/>
+        </svg>
+      </span>
+      <span class="body">
+        <span class="tags"><span class="tag">8 клас</span><span class="tag">Фізична географія</span></span>
+        <span class="title">Інтерактивний атлас України</span>
+        <span class="desc">Клімат, рельєф, населення, ґрунти та природні зони на базі SRTM.</span>
+      </span>
+      <span class="actions">
+        <span class="act act-open">Відкрити →</span>
+        <a class="act act-download" href="archives/atlas-8.zip" download onclick="event.stopPropagation()">⬇ Завантажити .zip</a>
+      </span>
+    </a>
+
+    <a href="ATLAS-9-ECONOMY.html" class="entry" data-tags="econ-geo g9" target="_blank">
+      <span class="num">02</span>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <path d="M4 30 V16 M14 30 V10 M24 30 V20 M34 30 V6"/>
+        </svg>
+      </span>
+      <span class="body">
+        <span class="tags"><span class="tag">9 клас</span><span class="tag">Економічна географія</span></span>
+        <span class="title">Україна у світовій економіці</span>
+        <span class="desc">Промисловість, сільське господарство, сфера послуг та національна економіка.</span>
+      </span>
+      <span class="actions">
+        <span class="act act-open">Відкрити →</span>
+        <a class="act act-download" href="archives/atlas-9.zip" download onclick="event.stopPropagation()">⬇ Завантажити .zip</a>
+      </span>
+    </a>
+
+  </nav>
+
+  <p class="empty" id="empty-msg">Матеріалів за цим фільтром поки немає.</p>
+
+</div>
+
+<script>
+  // Проста фільтрація без залежностей: показуємо/ховаємо рядки за data-tags
+  const buttons = document.querySelectorAll('.filter-btn');
+  const entries = document.querySelectorAll('.entry');
+  const emptyMsg = document.getElementById('empty-msg');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      let visibleCount = 0;
+
+      entries.forEach(entry => {
+        const tags = entry.dataset.tags.split(' ');
+        const show = filter === 'all' || tags.includes(filter);
+        entry.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+
+      emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
