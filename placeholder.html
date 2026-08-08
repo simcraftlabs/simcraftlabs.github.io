@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розділ у розробці</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /*
+    ШАБЛОН-ЗАГЛУШКА для розділів без матеріалів.
+    Щоб застосувати до конкретного предмета — заміни лише 3 речі:
+      1. --accent нижче — на колір предмета (--phys / --info / --misc з index.html)
+      2. текст у .eyebrow (номер розділу)
+      3. текст у <h1> і .lede
+    Решта стилів і структура лишаються без змін для консистентності сайту.
+  */
+  :root{
+    --paper:#faf9f6;
+    --ink:#17181c;
+    --ink-soft:#5b5d63;
+    --line:#dcdad3;
+    --accent:#5a3e9e; /* тут підставити колір потрібного предмета */
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--paper);}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    min-height:100vh;
+    position:relative;
+  }
+
+  .grid-bg{
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size:44px 44px;
+    opacity:0.35;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  .wrap{max-width:760px; margin:0 auto; padding:56px 24px 120px;}
+
+  .back{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    text-decoration:none;
+    margin-bottom:40px;
+  }
+  .back:hover{color:var(--ink);}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:"№ 04 — ";}
+
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:clamp(2rem, 5vw, 2.7rem);
+    letter-spacing:-0.01em;
+    line-height:1.08;
+    margin-bottom:14px;
+  }
+
+  p.lede{
+    font-size:1.02rem;
+    color:var(--ink-soft);
+    max-width:50ch;
+    margin-bottom:56px;
+  }
+
+  /* ===== ПОРОЖНІЙ РЯДОК ІНДЕКСУ =====
+     Той самий "рядок каталогу", що й на сторінках зі списками матеріалів,
+     тільки пунктирна межа й приглушений текст замість посилання —
+     щоб було видно: місце вже підготовлене, просто ще не заповнене. */
+  .index{border-top:1px solid var(--ink);}
+
+  .empty-entry{
+    display:flex; align-items:center; gap:22px;
+    padding:34px 4px;
+    border-bottom:1px dashed var(--line);
+  }
+
+  .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    width:26px; flex:0 0 auto;
+  }
+
+  .icon{width:34px; height:34px; flex:0 0 auto;}
+  .icon svg{width:100%; height:100%; display:block; stroke:var(--ink-soft);}
+
+  .msg{flex:1 1 auto;}
+  .msg .title{
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.1rem;
+    color:var(--ink-soft);
+  }
+
+  footer{
+    margin-top:56px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <a href="index.html" class="back">← На головну</a>
+
+  <header>
+    <div class="eyebrow">Каталог застосунків</div>
+    <h1>Розділ у розробці</h1>
+    <p class="lede">Матеріали цього розділу ще готуються. Заходь пізніше — сторінка з'явиться тут само.</p>
+  </header>
+
+  <nav class="index" aria-label="Матеріали">
+    <div class="empty-entry">
+      <span class="num">—</span>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" stroke-width="1.6">
+          <circle cx="20" cy="20" r="15"/>
+          <path d="M20 12 V20 L25 24"/>
+        </svg>
+      </span>
+      <span class="msg">
+        <span class="title">Матеріалів поки немає</span>
+      </span>
+    </div>
+  </nav>
+
+  <footer><a href="LICENSE" style="color:inherit;">MIT License</a> · код відкритий для копіювання й змін</footer>
+
+</div>
+
+</body>
+</html>
